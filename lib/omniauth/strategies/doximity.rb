@@ -20,12 +20,14 @@ module OmniAuth
       attr_reader :profile
 
       def request_phase
+        redirect_uri = URI(options.redirect_uri)
+        redirect_uri.query = request.params.to_query
         uri = URI::HTTPS.build(
           host: options.client_options.site,
           path: options.client_options.authorize_path,
           query: {
             client_id: consumer.key,
-            redirect_uri: options.redirect_uri,
+            redirect_uri: redirect_uri.to_s,
             response_type: options.response_type,
             scope: options.scope
             }.to_query
