@@ -42,6 +42,8 @@ module OmniAuth
       end
 
       def exchange_code(code)
+        redirect_uri = URI(options.redirect_uri)
+        redirect_uri.query = request.params.except('code').to_query
         uri = URI::HTTPS.build(
           host: options.client_options.site,
           path: options.client_options.token_path
@@ -50,7 +52,7 @@ module OmniAuth
         req.set_form_data(
           client_id: consumer.key,
           client_secret: consumer.secret,
-          redirect_uri: options.redirect_uri,
+          redirect_uri: redirect_uri.to_s,
           grant_type: options.grant_type,
           code: code
         )
